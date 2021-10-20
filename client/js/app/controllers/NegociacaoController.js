@@ -1,13 +1,14 @@
 class NegociacaoController {
+  constructor() {
+    let $ = document.querySelector.bind(document); // .bind(document) para o querySelector se referenciar pelo document.
+    this._inputData = $('#data');
+    this._inputQuantidade = $('#quantidade');
+    this._inputValor = $('#valor');
+  }
   adiciona(event) {
     event.preventDefault();
-    let $ = document.querySelector.bind(document); // .bind(document) para o querySelector se referenciar pelo document.
-    let inputData = $('#data');
-    let inputQuantidade = $('#quantidade');
-    let inputValor = $('#valor');
 
-    console.log(inputData.value);
-    console.log(inputQuantidade.value);
-    console.log(inputValor.value);
+    let data = new Date(this._inputData.value.replace(/-/g, ','));
+    console.log(data);
   }
 }
