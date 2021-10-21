@@ -7,7 +7,7 @@ class Mensagem {
     return this._texto;
   }
 
-  set texto() {
-      this._texto = this.texto
+  set texto(texto) {
+    this._texto = texto;
   }
 }
