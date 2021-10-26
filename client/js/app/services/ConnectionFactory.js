@@ -1,38 +1,43 @@
-var stores = ['negociacoes'];
-var version = 4;
-var dbName = 'aluraframe';
+var ConnectionFactory = (function () {
+  var stores = ['negociacoes'];
+  var version = 4;
+  var dbName = 'aluraframe';
 
-class ConnectionFactory {
-  constructor() {
-    throw new Error('Não é possível criar instâncias de ConnectionFactory');
-  }
+  var connection = null;
 
-  static getConnection() {
-    return new Promise((resolve, reject) => {
-      let openRequest = window.indexedDB.open(dbName, version);
+  return class ConnectionFactory {
+    constructor() {
+      throw new Error('Não é possível criar instâncias de ConnectionFactory');
+    }
 
-      openRequest.onupgradeneeded = (e) => {
-        ConnectionFactory._createStores(e.target.result);
-      };
+    static getConnection() {
+      return new Promise((resolve, reject) => {
+        let openRequest = window.indexedDB.open(dbName, version);
 
-      openRequest.onsuccess = (e) => {
-        resolve(e.target.result);
-      };
+        openRequest.onupgradeneeded = (e) => {
+          ConnectionFactory._createStores(e.target.result);
+        };
 
-      openRequest.onerror = (e) => {
-        console.log(e.target.error);
+        openRequest.onsuccess = (e) => {
+          if (!connection) connection = e.target.result;
+          resolve(connection);
+        };
 
-        reject(e.target.error.name);
-      };
-    });
-  }
+        openRequest.onerror = (e) => {
+          console.log(e.target.error);
 
-  static _createStores(connection) {
-    stores.forEach((store) => {
-      if (connection.objectStoreNames.contains(store))
-        connection.deleteObjectStore(store);
+          reject(e.target.error.name);
+        };
+      });
+    }
 
-      connection.createObjectStore(store, { autoIncrement: true });
-    });
-  }
-}
+    static _createStores(connection) {
+      stores.forEach((store) => {
+        if (connection.objectStoreNames.contains(store))
+          connection.deleteObjectStore(store);
+
+        connection.createObjectStore(store, { autoIncrement: true });
+      });
+    }
+  };
+})();
